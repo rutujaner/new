@@ -26,7 +26,9 @@ class FirstPage extends StatelessWidget {
             ),
 
             //2
-            TextButton(onPressed: null, 
+            TextButton(onPressed:(){
+              Navigator.push(context, MaterialPageRoute(builder:(context)=>SecondPage()));
+            },
             child: Container(
               padding: EdgeInsets.all(20.0),
               width: double.infinity,
@@ -36,7 +38,9 @@ class FirstPage extends StatelessWidget {
             ),
 
             //3
-            TextButton(onPressed: null, 
+            TextButton(onPressed:(){
+              Navigator.push(context, MaterialPageRoute(builder:(context)=>SecondPage()));
+            }, 
             child: Container(
               padding: EdgeInsets.all(20.0),
               width: double.infinity,

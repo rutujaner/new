@@ -5,12 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'first.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login.dart';
 
 String filtertype = "Rating";
 var sorttype = true;
 var spinner = false;
 var searched;
 var firebasequery;
+var user;
 
 class ThirdPage extends StatefulWidget {
   @override
@@ -18,6 +21,8 @@ class ThirdPage extends StatefulWidget {
 }
 
 class _ThirdPageState extends State<ThirdPage> {
+  final auth=FirebaseAuth.instance;
+
   final _database = FirebaseFirestore.instance;
 
   void getData() async {
@@ -60,13 +65,22 @@ class _ThirdPageState extends State<ThirdPage> {
     return d.toString();
   }
 
+  void getCurrentUser() {
+    user = auth.currentUser;
+    if(user!=null){
+      print(user.email);
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    print(auth.currentUser);
+    getCurrentUser();
     firebasequery = FirebaseFirestore.instance
         .collection("Rating")
-        .orderBy(filtertype, descending: sorttype)
+        .where("User",isEqualTo: user.email.toString())
         .get();
   }
   @override
@@ -303,7 +317,7 @@ class _ThirdPageState extends State<ThirdPage> {
                                                           .delete();
                                                       firebasequery = FirebaseFirestore.instance
                                                           .collection("Rating")
-                                                          .orderBy(filtertype, descending: sorttype)
+                                                          .where("User",isEqualTo:user.email.toString() )
                                                           .get();
                                                     });
                                                   },
@@ -353,16 +367,7 @@ class _ThirdPageState extends State<ThirdPage> {
                       MaterialPageRoute(builder: (context) => SecondPage()));
                 },
               ),
-              ListTile(
-                title: Text('VIEW LIST'),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ThirdPage()));
-                },
-              ),
+        
               ListTile(
                 title: Text('CATEGORIES'),
                 onTap: () {
@@ -373,6 +378,18 @@ class _ThirdPageState extends State<ThirdPage> {
                       MaterialPageRoute(builder: (context) => FirstPage()));
                 },
               ),
+
+              ListTile(
+              title: Text('LOG OUT'),
+              onTap: () {
+                auth.signOut();
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+
+                Navigator.push(context, MaterialPageRoute(builder:(context)=>LoginScreen()));
+              },
+            ),
             ],
           ),
         ),

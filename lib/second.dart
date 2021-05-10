@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:rr/third.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'first.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login.dart';
+
 int rating = 1;
 var title="";
 String _chosenValue;
@@ -14,6 +17,22 @@ class SecondPage extends StatefulWidget {
 class _SecondPageState extends State<SecondPage> {
 
   final _database=FirebaseFirestore.instance;
+  final auth=FirebaseAuth.instance;
+
+  void getCurrentUser(){
+    user= auth.currentUser;
+    if(user!=null){
+      print(user.email);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getCurrentUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -185,6 +204,7 @@ class _SecondPageState extends State<SecondPage> {
                       'Rating': rating,
                       'Time': DateTime.now(),
                       'Genre': _chosenValue,
+                      'User': user.email.toString(),
                     }
                     );
                     Navigator.push(context,
@@ -219,15 +239,6 @@ class _SecondPageState extends State<SecondPage> {
                 ),
               ),
               ListTile(
-                title: Text('ADD NEW'),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.push(context, MaterialPageRoute(builder:(context)=>SecondPage()));
-                },
-              ),
-              ListTile(
                 title: Text('VIEW LIST'),
                 onTap: () {
                   // Update the state of the app
@@ -245,6 +256,19 @@ class _SecondPageState extends State<SecondPage> {
                   Navigator.push(context, MaterialPageRoute(builder:(context)=>FirstPage()));
                 },
               ),
+              ListTile(
+              title: Text('LOG OUT'),
+              onTap: () {
+                auth.signOut();
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+
+                Navigator.push(context, MaterialPageRoute(builder:(context)=>LoginScreen()));
+              },
+            )
+          
+
             ],
           ),
         ),

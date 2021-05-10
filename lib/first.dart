@@ -10,10 +10,11 @@ class FirstPage extends StatefulWidget {
 }
 
 class _FirstPageState extends State<FirstPage> {
-  final _auth=FirebaseAuth.instance;
- var user;
-  void getCurrentUser() async{
-    user=await _auth.currentUser;
+  final auth=FirebaseAuth.instance;
+ var user,username;
+  void getCurrentUser(){
+    user= auth.currentUser;
+    username= user.email.toString().split("@")[0];
     if(user!=null){
       print(user.email);
     }
@@ -67,7 +68,7 @@ class _FirstPageState extends State<FirstPage> {
                 child: Container(
                   padding: EdgeInsets.all(20.0),
                   width: double.infinity,
-                  child: Text("Movie",style: TextStyle(fontSize: 20.0),),
+                  child: Text("Movies",style: TextStyle(fontSize: 20.0),),
 
                 ),
               ),
@@ -95,7 +96,13 @@ class _FirstPageState extends State<FirstPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset("images/logo.png",width: 100,),
-                  Text("Hello ",style: TextStyle(color: Colors.white),),
+                  Row(
+                    children: [
+                      Text("Hello ",style: TextStyle(color: Colors.white),),
+                      Text(username,style: TextStyle(color: Colors.white),),
+                    ],
+                  ),
+                  
                 ],
               ),
               decoration: BoxDecoration(
@@ -121,18 +128,9 @@ class _FirstPageState extends State<FirstPage> {
               },
             ),
             ListTile(
-              title: Text('CATEGORIES'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.push(context, MaterialPageRoute(builder:(context)=>FirstPage()));
-              },
-            ),
-            ListTile(
               title: Text('LOG OUT'),
               onTap: () {
-                _auth.signOut();
+                auth.signOut();
                 // Update the state of the app
                 // ...
                 // Then close the drawer

@@ -1,103 +1,255 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rr/third.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'third.dart';
-
-int rating = 0;
-var title='';
-
+import 'first.dart';
+int rating = 1;
+var title="";
+String _chosenValue;
 class SecondPage extends StatefulWidget {
   @override
   _SecondPageState createState() => _SecondPageState();
 }
 
 class _SecondPageState extends State<SecondPage> {
-  final database = FirebaseFirestore.instance;
+
+  final _database=FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return MaterialApp(
+      home: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text('FEED'),
+          title: Center(child: Image.asset("images/logo.png",width: 150.0,)),
+          backgroundColor: Colors.black,
+          actions: [
+            TextButton(
+              child: Icon(Icons.notifications,color: Colors.white,),
+              onPressed: null,),
+
+          ],
+
         ),
+
         body: Container(
-          color: Colors.pinkAccent[100],
+          color: Colors.blueGrey[200],
           width: double.infinity,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              //1
               Container(
                 padding: EdgeInsets.all(20.0),
-                child: TextField(
-                  onChanged: (newtitle) {
-                    title=newtitle;
-
-                  },
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Colors.white,
-                    hintText: 'Enter title',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      onChanged: (value) {
+                        title=value;
+                      },
+                      style: TextStyle(
+                        color: Colors.black,
                       ),
-                      borderSide: BorderSide.none,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: 'Enter the title',
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10.0),
+                          ),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(height: 30.0,),
+                    Container(
+                      padding: EdgeInsets.all(10.0),
+
+
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                rating.toString(),
+                                style: TextStyle(
+                                  fontSize: 50.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                "/10",
+                                style: TextStyle(
+                                  fontSize: 50.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                          Center(
+                            child: Text("User Rating",style: TextStyle(
+                              fontSize:20.0,
+                              color: Colors.grey,
+                            ),),
+                          ),
+                          Slider(
+                            value: rating.toDouble(),
+                            min: 1.0,
+                            max: 10.0,
+                            onChanged: (double value) {
+                              setState(() {
+                                rating = value.round();
+                              });
+                            },
+                            activeColor: Colors.black,
+                            inactiveColor: Colors.blueGrey[300],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 30.0,),
+                    Container(
+                      
+                      padding: EdgeInsets.symmetric(horizontal: 20.0,vertical: 5.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0)
+                      ),
+                      child: Center(
+                        child: DropdownButton<String>(
+                          value: _chosenValue,
+                          dropdownColor: Colors.white,
+                          // elevation: 10,
+                          style: TextStyle(color: Colors.black),
+                          items: <String>[
+                            'ACTION',
+                            'ROMANCE',
+                            'DRAMA',
+                            'SUSPENSE',
+                            'COMEDY',
+                            'HORROR',
+                            'DOCUMENTARY',
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          hint: Center(
+                            child: Text(
+                              "Select a Genre",
+                              style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          onChanged: (String value) {
+                            setState(() {
+                              _chosenValue = value;
+                            });
+                          },
+                        ),
+                      ),
+                    )
+
+
+
+
+
+                  ],
                 ),
               ),
 
-              //2
-              Center(
-                child: Text(
-                  rating.toString(),
-                  style: TextStyle(fontSize: 40.0),
-                ),
-              ),
-
-              //3
-              Container(
-                child: Slider(
-                  value: rating.toDouble(),
-                  onChanged: (double value) {
-                    setState(() {
-                      rating = value.round();
-                    });
-                  },
-                  min: 0.0,
-                  max: 5.0,
-                  activeColor: Color(0xFF40E0D0),
-                  inactiveColor: Color(0xFF00CED1),
-                ),
-              ),
-
-              //4
               Container(
                 width: double.infinity,
+                padding: EdgeInsets.all(10.0),
                 color: Colors.black,
                 child: TextButton(
+                  child: Text(
+                    "ADD",
+                    style: TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
                   onPressed: (){
-                    if(title!='')
-                    {
-                      database.collection("Rating").add({
-                        'Title':title,
-                        'Rating':rating,
-                        'Time':DateTime.now()
-                      });
-                      Navigator.push(context, MaterialPageRoute(builder:(context)=>ThirdPage()));
+                  if(title!="" && _chosenValue!=null) {
+                    _database.collection('Rating').add({
+                      'Title': title,
+                      'Rating': rating,
+                      'Time': DateTime.now(),
+                      'Genre': _chosenValue,
                     }
+                    );
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ThirdPage()));
+                  }
+                  else{
+                    print("Please enter a value");
+                  }
+
+
                   },
-                  child: Text('ADD',
-                      style: TextStyle(fontSize: 20, color: Colors.white)),
                 ),
-              )
+              ),
+
             ],
           ),
-        ));
+        ),
+        // floatingActionButton: FloatingActionButton(
+        //   child: Icon(Icons.arrow_forward),
+        //   onPressed: (){
+        //     Navigator.push(context, MaterialPageRoute(builder: (context)=>ThirdPage()));
+        //   },
+        // ),
+        drawer:  Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                child: Text(""),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+              ),
+              ListTile(
+                title: Text('ADD NEW'),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.push(context, MaterialPageRoute(builder:(context)=>SecondPage()));
+                },
+              ),
+              ListTile(
+                title: Text('VIEW LIST'),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.push(context, MaterialPageRoute(builder:(context)=>ThirdPage()));
+                },
+              ),
+              ListTile(
+                title: Text('CATEGORIES'),
+                onTap: () {
+                  // Update the state of the app
+                  // ...
+                  // Then close the drawer
+                  Navigator.push(context, MaterialPageRoute(builder:(context)=>FirstPage()));
+                },
+              ),
+            ],
+          ),
+        ),
+
+      ),
+    );
   }
 }
